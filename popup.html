@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Element Selector</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="container">
+    <div class="row header-row">
+      <h2>Web Element Selector</h2>
+      <button id="settingsBtn" title="Settings" class="iconBtn">⚙</button>
+    </div>
+
+    <div id="errorBanner" class="errorBanner" style="display:none;"></div>
+
+    <div class="row">
+      <label class="switch">
+        <input type="checkbox" id="inspectToggle">
+        <span class="slider"></span>
+      </label>
+      <span>Inspect mode (blocks clicks)</span>
+      <button id="refreshBtn" title="Recompute selectors for the current selection">Refresh</button>
+    </div>
+    <div class="hint">Tip: Alt+Click picks an element without blocking navigation. Right-click any element and choose "Generate selectors for this element", or use the Alt+Shift+E shortcut.</div>
+
+    <div id="frameInfo" class="hint" style="display:none;"></div>
+    <div id="shadowInfo" class="hint warn" style="display:none;"></div>
+
+    <div class="grid">
+      <div class="card" data-field="cssRelative">
+        <div class="card-title">CSS — Relative <span class="badge">★ recommended</span></div>
+        <textarea id="cssRel" readonly></textarea>
+        <button class="copy" data-target="cssRel">Copy</button>
+      </div>
+      <div class="card" data-field="cssAbsolute">
+        <div class="card-title">CSS — Absolute <span class="badge">★ recommended</span></div>
+        <textarea id="cssAbs" readonly></textarea>
+        <button class="copy" data-target="cssAbs">Copy</button>
+      </div>
+      <div class="card" data-field="xpathRelative">
+        <div class="card-title">XPath — Relative <span class="badge">★ recommended</span></div>
+        <textarea id="xpRel" readonly></textarea>
+        <button class="copy" data-target="xpRel">Copy</button>
+      </div>
+      <div class="card" data-field="xpathAbsolute">
+        <div class="card-title">XPath — Absolute <span class="badge">★ recommended</span></div>
+        <textarea id="xpAbs" readonly></textarea>
+        <button class="copy" data-target="xpAbs">Copy</button>
+      </div>
+    </div>
+
+    <div class="card full">
+      <div class="card-title">More selectors</div>
+      <label>CSS (attr contains)</label>
+      <textarea id="cssContains" readonly></textarea>
+      <button class="copy" data-target="cssContains">Copy</button>
+
+      <label>XPath (text contains)</label>
+      <textarea id="xpText" readonly></textarea>
+      <button class="copy" data-target="xpText">Copy</button>
+
+      <label>ARIA/Role selector</label>
+      <textarea id="roleSel" readonly></textarea>
+      <button class="copy" data-target="roleSel">Copy</button>
+
+      <label>Playwright locators</label>
+      <textarea id="pwLocators" readonly></textarea>
+      <button class="copy" data-target="pwLocators">Copy</button>
+    </div>
+
+    <div class="row">
+      <button id="validateBtn">Validate All</button>
+      <button id="copyAllBtn">Copy All</button>
+      <div id="validationResult"></div>
+    </div>
+
+    <details id="historyPanel">
+      <summary>History (<span id="historyCount">0</span>)</summary>
+      <ul id="historyList"></ul>
+      <button id="clearHistoryBtn">Clear history</button>
+    </details>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

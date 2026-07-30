@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Web Element Selector Generator",
+  "version": "1.1",
+  "description": "Generate XPath and CSS selectors for web elements.",
+  "permissions": ["activeTab", "scripting", "storage", "contextMenus"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "all_frames": true,
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "toggle-inspect": {
+      "suggested_key": { "default": "Alt+Shift+E" },
+      "description": "Toggle inspect mode on the active tab"
+    }
+  }
+}
