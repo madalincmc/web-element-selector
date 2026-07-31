@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "Web Element Selector Generator",
+  "version": "1.2",
+  "description": "Generate CSS/XPath selectors for elements or a whole page, with ready-to-paste Selenium, Playwright, and Cypress code snippets.",
+  "permissions": ["activeTab", "scripting", "storage", "contextMenus", "webNavigation"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "sidebar_action": {
+    "default_panel": "sidepanel.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "Web Element Selector — Page Scan"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "all_frames": true,
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "toggle-inspect": {
+      "suggested_key": { "default": "Alt+Shift+E" },
+      "description": "Toggle inspect mode on the active tab"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{651f1825-5ed3-42cb-8817-ab068f4e3aab}",
+      "strict_min_version": "115.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  }
+}

@@ -190,7 +190,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('panelBtn').addEventListener('click', () => {
     if (!currentTabId) return;
     try {
-      chrome.sidePanel.open({ tabId: currentTabId });
+      // Chrome/Edge: chrome.sidePanel. Firefox has no sidePanel API — it uses
+      // its own long-standing sidebarAction instead, opened the same way.
+      if (chrome.sidePanel && chrome.sidePanel.open) {
+        chrome.sidePanel.open({ tabId: currentTabId });
+      } else if (chrome.sidebarAction && chrome.sidebarAction.open) {
+        chrome.sidebarAction.open();
+      } else {
+        showError('This browser does not support a side panel/sidebar.');
+      }
     } catch (e) {
       showError('Could not open the side panel: ' + e.message);
     }
@@ -236,13 +244,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (chrome.runtime.lastError) { showError(chrome.runtime.lastError.message); return; }
       const rows = (results && results[0] && results[0].result) || [];
       const div = document.getElementById('validationResult');
-      div.innerHTML = rows.map(([label, n]) => {
-        if (n === -2) return `<div class='warn'>${label}: empty</div>`;
-        if (n === -1) return `<div class='err'>${label}: invalid</div>`;
-        if (n === 0) return `<div class='err'>${label}: 0 matches</div>`;
-        if (n === 1) return `<div class='ok'>${label}: 1 match</div>`;
-        return `<div class='warn'>${label}: ${n} matches</div>`;
-      }).join('');
+      div.innerHTML = '';
+      rows.forEach(([label, n]) => {
+        const row = document.createElement('div');
+        row.className = n === -1 || n === 0 ? 'err' : (n === 1 ? 'ok' : 'warn');
+        row.textContent = n === -2 ? `${label}: empty`
+          : n === -1 ? `${label}: invalid`
+          : n === 0 ? `${label}: 0 matches`
+          : n === 1 ? `${label}: 1 match`
+          : `${label}: ${n} matches`;
+        div.appendChild(row);
+      });
     });
   });
 
