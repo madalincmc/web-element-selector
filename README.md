@@ -1,5 +1,11 @@
 # Web Element Selector Generator
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/promo-dark/promo_6_overview.png">
+  <source media="(prefers-color-scheme: light)" srcset="images/promo-light/promo_6_overview.png">
+  <img alt="Web Element Selector Generator — popup and full-page scan side panel" src="images/promo-dark/promo_6_overview.png">
+</picture>
+
 A Chrome (Manifest V3) extension that turns any element — or an entire page — into ready-to-use CSS, XPath, ARIA, and Playwright locators, plus copy-paste code snippets for Selenium, Playwright, Cypress, and WebdriverIO — for test automation, web scraping, and debugging.
 
 ## Features
@@ -25,6 +31,19 @@ The extension has six parts:
 - **`sidepanel.html`/`sidepanel.js`** — the full-page scan panel. Scan the current page, filter by element category or free-text search, hover a result to highlight it live on the page, expand a row for all 8 locator strategies plus a code snippet, multi-select rows, and export selected elements as a Page Object class or the whole result set as JSON/CSV.
 - **`snippets.js`** — framework-agnostic code-snippet generator shared by the popup and side panel. Given an element's locator payload, it produces an idiomatic one-line locator statement (`page.getByTestId(...)`, `driver.findElement(By.cssSelector(...))`, `cy.get(...)`, `$(...)`, etc.) or a full Page Object class skeleton for a batch of elements, per framework and language.
 - **`options.html`/`options.js`** — the settings page: reorder which attributes (`data-testid`, `data-qa`, etc.) are preferred when building selectors, set the default code-snippet framework/language, and export your selection history.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="images/promo-dark/promo_1_selectori.png" alt="8 CSS/XPath locator strategies for any picked element"></td>
+    <td><img src="images/promo-dark/promo_2_playwright.png" alt="Ready-to-paste Selenium/Playwright/Cypress/WebdriverIO code snippets"></td>
+  </tr>
+  <tr>
+    <td><img src="images/promo-dark/promo_3_scan.png" alt="Full-page scan side panel with category filters"></td>
+    <td><img src="images/promo-dark/promo_4_export.png" alt="Export every scanned selector as JSON or CSV"></td>
+  </tr>
+</table>
 
 ## Installation
 
