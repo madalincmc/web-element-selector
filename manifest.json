@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Web Element Selector Generator",
   "version": "1.2",
-  "description": "Generate XPath and CSS selectors for web elements, scan a whole page at once, and export ready-to-paste Selenium/Playwright/Cypress code.",
+  "description": "Generate CSS/XPath selectors for elements or a whole page, with ready-to-paste Selenium, Playwright, and Cypress code snippets.",
   "minimum_chrome_version": "114",
   "permissions": ["activeTab", "scripting", "storage", "contextMenus", "sidePanel", "webNavigation"],
   "action": {
