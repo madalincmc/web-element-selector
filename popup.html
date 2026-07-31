@@ -9,7 +9,10 @@
   <div id="container">
     <div class="row header-row">
       <h2>Web Element Selector</h2>
-      <button id="settingsBtn" title="Settings" class="iconBtn">⚙</button>
+      <div class="row">
+        <button id="panelBtn" title="Scan the whole page in the side panel" class="iconBtn">⛶</button>
+        <button id="settingsBtn" title="Settings" class="iconBtn">⚙</button>
+      </div>
     </div>
 
     <div id="errorBanner" class="errorBanner" style="display:none;"></div>
@@ -75,12 +78,23 @@
       <div id="validationResult"></div>
     </div>
 
+    <div class="card full">
+      <div class="card-title">Code snippet</div>
+      <div class="row">
+        <select id="frameworkSelect"></select>
+        <select id="languageSelect"></select>
+      </div>
+      <textarea id="snippetCode" readonly></textarea>
+      <button class="copy" id="copySnippetBtn">Copy</button>
+    </div>
+
     <details id="historyPanel">
       <summary>History (<span id="historyCount">0</span>)</summary>
       <ul id="historyList"></ul>
       <button id="clearHistoryBtn">Clear history</button>
     </details>
   </div>
+  <script src="snippets.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

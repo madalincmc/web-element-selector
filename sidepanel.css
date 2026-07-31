@@ -1,0 +1,69 @@
+body {
+  margin: 0;
+  padding: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  color: #222;
+}
+#container { display: flex; flex-direction: column; gap: 8px; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.header-row { justify-content: space-between; }
+.header-row h2 { margin: 0; font-size: 15px; }
+.iconBtn { background: none; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 14px; padding: 2px 6px; }
+.hint { font-size: 11px; color: #555; }
+.hint.warn { color: #b07600; }
+button { padding: 5px 10px; cursor: pointer; font-size: 12px; }
+input[type="text"], input[type="number"], select {
+  padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;
+}
+#searchBox { flex: 1; min-width: 120px; }
+#customSelectors { flex: 1; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+.errorBanner { background: #fdecea; color: #b00020; border: 1px solid #f5c6cb; border-radius: 4px; padding: 6px 8px; font-size: 12px; }
+
+.toolbar { display: flex; align-items: center; gap: 10px; }
+#scanBtn { background: #3b82f6; color: white; border: none; border-radius: 4px; font-weight: bold; }
+#scanBtn:disabled { background: #93c5fd; cursor: default; }
+
+#filtersPanel { border: 1px solid #ddd; border-radius: 6px; padding: 6px 8px; }
+#filtersPanel summary { cursor: pointer; font-weight: bold; font-size: 12px; }
+.filterGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 8px 0; font-size: 12px; }
+.filterGrid label { display: flex; align-items: center; gap: 4px; }
+
+.codeRow select { flex: 1; }
+
+#resultsList { display: flex; flex-direction: column; gap: 4px; max-height: 50vh; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; padding: 4px; }
+
+.entryRow { border: 1px solid #e5e5e5; border-radius: 5px; background: #fafafa; }
+.entryRow.highlighted { border-color: #3b82f6; box-shadow: 0 0 0 1px #3b82f6 inset; }
+.entryHead { display: flex; align-items: center; gap: 6px; padding: 5px 6px; cursor: pointer; }
+.entryLabel { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.entryTag { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 10px; color: #777; }
+.catBadge {
+  font-size: 9px; text-transform: uppercase; letter-spacing: .3px; font-weight: bold;
+  border-radius: 8px; padding: 1px 6px; background: #e5edff; color: #3b45c9; flex: none;
+}
+.catBadge.testId { background: #dcfce7; color: #15803d; }
+.catBadge.form { background: #fef3c7; color: #92400e; }
+.catBadge.button { background: #ede9fe; color: #6d28d9; }
+.catBadge.link { background: #dbeafe; color: #1d4ed8; }
+.catBadge.input { background: #fce7f3; color: #9d174d; }
+.catBadge.other, .catBadge.heading, .catBadge.landmark, .catBadge.image { background: #f1f5f9; color: #475569; }
+
+.entrySelector {
+  padding: 0 6px 5px 28px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.entryDetail { padding: 6px; border-top: 1px dashed #ddd; }
+.detailGrid { display: flex; flex-direction: column; gap: 4px; font-size: 11px; margin-bottom: 8px; }
+.detailGrid .detailField { display: flex; gap: 6px; }
+.detailGrid .detailField .k { color: #777; flex: none; width: 80px; }
+.detailGrid .detailField .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; word-break: break-all; }
+
+.snippetBox { border: 1px solid #ddd; border-radius: 4px; background: #0f172a; color: #e2e8f0; }
+.snippetHeader { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; font-size: 11px; background: #1e293b; border-radius: 4px 4px 0 0; }
+.snippetHeader button { padding: 2px 8px; font-size: 11px; }
+.snippetCode { margin: 0; padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; white-space: pre-wrap; word-break: break-all; }
+
+.bulkBar { position: sticky; bottom: 0; display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 6px 8px; flex-wrap: wrap; }
+.exportRow { justify-content: flex-end; }

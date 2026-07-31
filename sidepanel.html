@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Element Selector — Page Scan</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div id="container">
+    <div class="row header-row">
+      <h2>Page selector scan</h2>
+      <button id="settingsBtn" title="Settings" class="iconBtn">⚙</button>
+    </div>
+
+    <div id="errorBanner" class="errorBanner" style="display:none;"></div>
+
+    <div class="toolbar">
+      <button id="scanBtn">Scan this page</button>
+      <span id="scanStatus" class="hint"></span>
+    </div>
+
+    <details id="filtersPanel">
+      <summary>Filters &amp; scope</summary>
+      <div class="filterGrid">
+        <label><input type="checkbox" data-cat="testId" checked> Test-id attributes</label>
+        <label><input type="checkbox" data-cat="form" checked> Forms</label>
+        <label><input type="checkbox" data-cat="button" checked> Buttons</label>
+        <label><input type="checkbox" data-cat="link" checked> Links</label>
+        <label><input type="checkbox" data-cat="input" checked> Inputs / selects</label>
+        <label><input type="checkbox" data-cat="heading"> Headings</label>
+        <label><input type="checkbox" data-cat="landmark"> ARIA roles</label>
+        <label><input type="checkbox" data-cat="image"> Images</label>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="visibleOnly"> Visible elements only</label>
+      </div>
+      <div class="row">
+        <label for="maxElements">Max elements</label>
+        <input type="number" id="maxElements" min="10" max="5000" step="10" value="500">
+      </div>
+      <div class="row">
+        <input type="text" id="customSelectors" placeholder="extra CSS selectors, comma separated">
+      </div>
+    </details>
+
+    <div class="row">
+      <input type="text" id="searchBox" placeholder="Filter results by text, tag, or selector…">
+    </div>
+
+    <div class="row">
+      <span id="resultCount" class="hint">0 elements</span>
+      <span id="truncatedNote" class="hint warn" style="display:none;">List truncated — raise the max, or narrow scope/search</span>
+    </div>
+
+    <div class="row codeRow">
+      <select id="frameworkSelect"></select>
+      <select id="languageSelect"></select>
+    </div>
+
+    <div id="resultsList"></div>
+
+    <div id="bulkBar" class="bulkBar" style="display:none;">
+      <span id="selectedCount">0 selected</span>
+      <button id="selectAllBtn">Select all</button>
+      <button id="clearSelectionBtn">Clear</button>
+      <button id="copySelectedBtn">Copy selected as code</button>
+      <button id="exportPageObjectBtn">Export page object…</button>
+    </div>
+
+    <div class="row exportRow">
+      <button id="exportJsonBtn">Export all as JSON</button>
+      <button id="exportCsvBtn">Export all as CSV</button>
+      <button id="clearScanBtn">Clear scan</button>
+    </div>
+  </div>
+
+  <template id="rowTemplate">
+    <div class="entryRow">
+      <div class="entryHead">
+        <input type="checkbox" class="entrySelect">
+        <span class="catBadge"></span>
+        <span class="entryLabel"></span>
+        <span class="entryTag"></span>
+      </div>
+      <div class="entrySelector"></div>
+      <div class="entryDetail" style="display:none;">
+        <div class="detailGrid"></div>
+        <div class="snippetBox">
+          <div class="snippetHeader">
+            <span>Code snippet</span>
+            <button class="copySnippetBtn">Copy</button>
+          </div>
+          <pre class="snippetCode"></pre>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script src="snippets.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>

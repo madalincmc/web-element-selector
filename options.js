@@ -119,3 +119,46 @@ chrome.storage.sync.get('wesg_priority_attrs', (res) => {
   }
   render();
 });
+
+// ---- default code-snippet framework/language --------------------------
+function populateFrameworkSelect(defaultFramework, defaultLanguage) {
+  const fwSelect = document.getElementById('frameworkSelect');
+  const langSelect = document.getElementById('languageSelect');
+  fwSelect.innerHTML = '';
+  WESGSnippets.FRAMEWORKS.forEach((fw) => {
+    const opt = document.createElement('option');
+    opt.value = fw.id;
+    opt.textContent = fw.label;
+    fwSelect.appendChild(opt);
+  });
+  if (defaultFramework) fwSelect.value = defaultFramework;
+
+  function populateLanguages() {
+    const fw = WESGSnippets.FRAMEWORKS.find((f) => f.id === fwSelect.value) || WESGSnippets.FRAMEWORKS[0];
+    langSelect.innerHTML = '';
+    fw.languages.forEach((lang) => {
+      const opt = document.createElement('option');
+      opt.value = lang.id;
+      opt.textContent = lang.label;
+      langSelect.appendChild(opt);
+    });
+    if (defaultLanguage && fw.languages.some((l) => l.id === defaultLanguage)) langSelect.value = defaultLanguage;
+  }
+  populateLanguages();
+  fwSelect.addEventListener('change', populateLanguages);
+}
+
+document.getElementById('saveFrameworkBtn').addEventListener('click', () => {
+  chrome.storage.sync.set({
+    wesg_default_framework: document.getElementById('frameworkSelect').value,
+    wesg_default_language: document.getElementById('languageSelect').value
+  }, () => {
+    const status = document.getElementById('frameworkSaveStatus');
+    status.textContent = 'Saved';
+    setTimeout(() => { status.textContent = ''; }, 2000);
+  });
+});
+
+chrome.storage.sync.get(['wesg_default_framework', 'wesg_default_language'], (res) => {
+  populateFrameworkSelect(res.wesg_default_framework, res.wesg_default_language);
+});

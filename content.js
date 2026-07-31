@@ -83,6 +83,23 @@ chrome.runtime.onMessage.addListener((message) => {
     emitSelection(selectedElement);
     return;
   }
+
+  if (message.action === 'scanPage') {
+    runPageScan(message.options).then((result) => {
+      chrome.runtime.sendMessage(Object.assign({ action: 'scanPageResult', scanId: message.scanId }, result)).catch(() => {});
+    });
+    return;
+  }
+
+  if (message.action === 'highlightScanElement') {
+    highlightByIndex(message.index, !!message.scroll);
+    return;
+  }
+
+  if (message.action === 'clearScanHighlight') {
+    clearScanHighlight();
+    return;
+  }
 });
 
 // Utils
@@ -291,6 +308,26 @@ function computeRecommended(sel) {
   return 'xpathAbsolute';
 }
 
+// Structured (non-string) description of the best identifying info for an
+// element, used by the code-snippet generators (snippets.js) so they don't
+// have to re-parse the CSS/XPath strings to recover a testid/role/text.
+function buildLocatorInfo(el) {
+  const testIdAttr = PRIORITY_ATTRS.find((a) => /test|qa|cy/i.test(a) && attr(el, a));
+  const testId = testIdAttr ? { attr: testIdAttr, value: attr(el, testIdAttr) } : null;
+  const role = attr(el, 'role');
+  const ariaLabel = attr(el, 'aria-label');
+  const text = (el.textContent || '').trim();
+  return {
+    tag: el.tagName.toLowerCase(),
+    id: el.id || null,
+    name: attr(el, 'name') || null,
+    testId,
+    role: role ? { role, name: ariaLabel || (text.length <= 60 ? text : null) || null } : null,
+    text: text ? text.slice(0, 60) : null,
+    placeholder: attr(el, 'placeholder') || null
+  };
+}
+
 function buildPayload(el) {
   const ctx = el.getRootNode();
   const inShadow = ctx !== document;
@@ -308,7 +345,8 @@ function buildPayload(el) {
   const payload = {
     cssRelative, cssAbsolute, xpathRelative, xpathAbsolute,
     cssContains, xpathText, roleSel, pwLocators,
-    shadowInfo: shadow.description, shadowPath: shadow.path
+    shadowInfo: shadow.description, shadowPath: shadow.path,
+    locator: buildLocatorInfo(el)
   };
   payload.recommended = computeRecommended(payload);
   return payload;
@@ -317,4 +355,140 @@ function buildPayload(el) {
 function emitSelection(el) {
   const payload = buildPayload(el);
   chrome.runtime.sendMessage(Object.assign({ action: 'elementSelected' }, payload)).catch(() => {});
+}
+
+// ---------------------------------------------------------------------------
+// Full-page scan: finds every "interesting" element in this frame (this file
+// runs once per frame via all_frames:true, so cross-origin iframes get their
+// own independent scan that the background script aggregates by frameId).
+// ---------------------------------------------------------------------------
+
+const DEFAULT_SCAN_CATEGORIES = {
+  testId: true, form: true, button: true, link: true, input: true,
+  heading: false, landmark: false, image: false
+};
+
+function buildScanSelector(opts) {
+  const cat = opts.categories || {};
+  const parts = [];
+  if (cat.link) parts.push('a[href]');
+  if (cat.button) parts.push('button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"]');
+  if (cat.input) parts.push('input:not([type="button"]):not([type="submit"]):not([type="reset"]), textarea, select');
+  if (cat.form) parts.push('form');
+  if (cat.heading) parts.push('h1, h2, h3, h4, h5, h6');
+  if (cat.landmark) parts.push('[role]');
+  if (cat.image) parts.push('img');
+  if (cat.testId) PRIORITY_ATTRS.forEach((a) => parts.push(`[${a}]`));
+  (opts.customSelectors || []).forEach((s) => { if (s && s.trim()) parts.push(s.trim()); });
+  return parts.join(', ') || 'a[href], button';
+}
+
+// querySelectorAll doesn't pierce shadow roots, so walk every open shadow
+// root under `root` and repeat the query inside it.
+function collectElementsDeep(root, selector, out, seen) {
+  let matched;
+  try { matched = root.querySelectorAll(selector); } catch (e) { return; }
+  matched.forEach((el) => { if (!seen.has(el)) { seen.add(el); out.push(el); } });
+  let all;
+  try { all = root.querySelectorAll('*'); } catch (e) { return; }
+  all.forEach((el) => { if (el.shadowRoot) collectElementsDeep(el.shadowRoot, selector, out, seen); });
+}
+
+function categorizeElement(el) {
+  const tag = el.tagName.toLowerCase();
+  const role = attr(el, 'role');
+  const hasTestId = PRIORITY_ATTRS.some((a) => /test|qa|cy/i.test(a) && attr(el, a));
+  if (hasTestId) return 'testId';
+  if (tag === 'form') return 'form';
+  if (tag === 'a' && attr(el, 'href')) return 'link';
+  const inputType = (attr(el, 'type') || '').toLowerCase();
+  if (tag === 'button' || role === 'button' || (tag === 'input' && ['button', 'submit', 'reset'].includes(inputType))) return 'button';
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') return 'input';
+  if (/^h[1-6]$/.test(tag)) return 'heading';
+  if (tag === 'img') return 'image';
+  if (role) return 'landmark';
+  return 'other';
+}
+
+function isVisible(el) {
+  try {
+    const rect = el.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) return false;
+    const style = getComputedStyle(el);
+    if (style.visibility === 'hidden' || style.display === 'none' || Number(style.opacity) === 0) return false;
+    return true;
+  } catch (e) { return true; }
+}
+
+function labelFor(el) {
+  const t = (el.textContent || '').trim().replace(/\s+/g, ' ');
+  if (t) return t.slice(0, 60);
+  const v = attr(el, 'value') || attr(el, 'placeholder') || attr(el, 'aria-label') || attr(el, 'alt');
+  if (v) return v.slice(0, 60);
+  return `<${el.tagName.toLowerCase()}>`;
+}
+
+function idle() {
+  return new Promise((resolve) => {
+    if (window.requestIdleCallback) requestIdleCallback(() => resolve(), { timeout: 200 });
+    else setTimeout(resolve, 0);
+  });
+}
+
+// Live element refs from the most recent scan in this frame, indexed so the
+// side panel can ask for a hover-highlight/scroll by index without holding
+// DOM references itself (messages are structured-cloned, not live refs).
+let scanElements = [];
+let scanHighlightEl = null;
+
+function highlightByIndex(i, scroll) {
+  clearScanHighlight();
+  const el = scanElements[i];
+  if (!el) return;
+  try {
+    el.style.outline = '3px solid #ef4444';
+    el.style.outlineOffset = '1px';
+    scanHighlightEl = el;
+    if (scroll) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } catch (e) {}
+}
+
+function clearScanHighlight() {
+  if (scanHighlightEl) {
+    try { scanHighlightEl.style.outline = ''; scanHighlightEl.style.outlineOffset = ''; } catch (e) {}
+    scanHighlightEl = null;
+  }
+}
+
+const CHUNK_SIZE = 40;
+
+async function runPageScan(options) {
+  const opts = Object.assign({ categories: DEFAULT_SCAN_CATEGORIES, customSelectors: [], visibleOnly: false, maxElements: 500 }, options || {});
+  const selector = buildScanSelector(opts);
+  const seen = new Set();
+  const candidates = [];
+  collectElementsDeep(document, selector, candidates, seen);
+
+  scanElements = [];
+  const entries = [];
+  let truncated = false;
+
+  for (let i = 0; i < candidates.length; i++) {
+    if (entries.length >= opts.maxElements) { truncated = true; break; }
+    const el = candidates[i];
+    if (opts.visibleOnly && !isVisible(el)) continue;
+
+    const category = categorizeElement(el);
+    const payload = buildPayload(el);
+    const index = scanElements.length;
+    scanElements.push(el);
+    entries.push(Object.assign(
+      { index, category, label: labelFor(el), visible: isVisible(el) },
+      payload
+    ));
+
+    if (entries.length % CHUNK_SIZE === 0) await idle();
+  }
+
+  return { entries, truncated, total: candidates.length };
 }

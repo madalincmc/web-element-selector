@@ -22,6 +22,43 @@ const FIELD_LABELS = {
 
 let currentTabId = null;
 let localHistory = [];
+let currentPayload = null;
+
+function populateFrameworkSelect(defaultFramework, defaultLanguage) {
+  const fwSelect = document.getElementById('frameworkSelect');
+  const langSelect = document.getElementById('languageSelect');
+  fwSelect.innerHTML = '';
+  WESGSnippets.FRAMEWORKS.forEach((fw) => {
+    const opt = document.createElement('option');
+    opt.value = fw.id;
+    opt.textContent = fw.label;
+    fwSelect.appendChild(opt);
+  });
+  if (defaultFramework) fwSelect.value = defaultFramework;
+
+  function populateLanguages() {
+    const fw = WESGSnippets.FRAMEWORKS.find((f) => f.id === fwSelect.value) || WESGSnippets.FRAMEWORKS[0];
+    langSelect.innerHTML = '';
+    fw.languages.forEach((lang) => {
+      const opt = document.createElement('option');
+      opt.value = lang.id;
+      opt.textContent = lang.label;
+      langSelect.appendChild(opt);
+    });
+    if (defaultLanguage && fw.languages.some((l) => l.id === defaultLanguage)) langSelect.value = defaultLanguage;
+  }
+  populateLanguages();
+  fwSelect.addEventListener('change', () => { populateLanguages(); updateSnippet(); });
+  langSelect.addEventListener('change', updateSnippet);
+}
+
+function updateSnippet() {
+  const box = document.getElementById('snippetCode');
+  if (!currentPayload) { box.value = ''; return; }
+  const fw = document.getElementById('frameworkSelect').value;
+  const lang = document.getElementById('languageSelect').value;
+  box.value = WESGSnippets.generate(fw, lang, currentPayload) || '';
+}
 
 function showError(msg) {
   const el = document.getElementById('errorBanner');
@@ -48,9 +85,11 @@ function sendMessageSafe(msg, cb) {
 }
 
 function fillAll(payload) {
+  currentPayload = payload;
   Object.keys(fields).forEach((key) => {
     fields[key].value = payload[key] || '';
   });
+  updateSnippet();
 
   document.querySelectorAll('.card[data-field]').forEach((card) => {
     card.classList.toggle('recommended', card.dataset.field === payload.recommended);
@@ -105,7 +144,11 @@ function renderHistory(list) {
   localHistory.forEach((entry) => {
     const li = document.createElement('li');
     const time = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString() : '';
-    li.innerHTML = `${historyLabel(entry)}<span class="hist-meta">${time}</span>`;
+    li.appendChild(document.createTextNode(historyLabel(entry)));
+    const meta = document.createElement('span');
+    meta.className = 'hist-meta';
+    meta.textContent = time;
+    li.appendChild(meta);
     li.addEventListener('click', () => fillAll(entry));
     ul.appendChild(li);
   });
@@ -137,6 +180,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('settingsBtn').addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
+  });
+
+  document.getElementById('copySnippetBtn').addEventListener('click', () => {
+    const text = document.getElementById('snippetCode').value;
+    if (text) navigator.clipboard.writeText(text);
+  });
+
+  document.getElementById('panelBtn').addEventListener('click', () => {
+    if (!currentTabId) return;
+    try {
+      chrome.sidePanel.open({ tabId: currentTabId });
+    } catch (e) {
+      showError('Could not open the side panel: ' + e.message);
+    }
   });
 
   document.getElementById('refreshBtn').addEventListener('click', () => {
@@ -194,6 +251,11 @@ document.addEventListener('DOMContentLoaded', () => {
   toggle.addEventListener('change', (e) => setInspect(e.target.checked));
 
   // Bootstrap
+  chrome.storage.sync.get(['wesg_default_framework', 'wesg_default_language'], (res) => {
+    populateFrameworkSelect(res.wesg_default_framework, res.wesg_default_language);
+    updateSnippet();
+  });
+
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const tabId = tabs && tabs[0] && tabs[0].id;
     if (!tabId) return;

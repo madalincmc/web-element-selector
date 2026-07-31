@@ -25,6 +25,17 @@
     </section>
 
     <section>
+      <h3>Default code-snippet framework</h3>
+      <p class="hint">Used to pre-select the framework/language in the popup and the page-scan side panel.</p>
+      <div class="row">
+        <select id="frameworkSelect"></select>
+        <select id="languageSelect"></select>
+        <button id="saveFrameworkBtn">Save</button>
+        <span id="frameworkSaveStatus"></span>
+      </div>
+    </section>
+
+    <section>
       <h3>Export selection history</h3>
       <p class="hint">Exports the selector history cached for every tab you've used the extension on (cleared automatically when a tab closes).</p>
       <div class="row">
@@ -33,6 +44,7 @@
       </div>
     </section>
   </div>
+  <script src="snippets.js"></script>
   <script src="options.js"></script>
 </body>
 </html>
