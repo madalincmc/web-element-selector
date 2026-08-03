@@ -1,5 +1,9 @@
 # Web Element Selector Generator
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/njnpnfbnkpccabdjcgmgambggjnmbnad.svg?label=Chrome%20Web%20Store)](https://chromewebstore.google.com/detail/web-element-selector-gene/njnpnfbnkpccabdjcgmgambggjnmbnad)
+[![Users](https://img.shields.io/chrome-web-store/users/njnpnfbnkpccabdjcgmgambggjnmbnad.svg)](https://chromewebstore.google.com/detail/web-element-selector-gene/njnpnfbnkpccabdjcgmgambggjnmbnad)
+[![Rating](https://img.shields.io/chrome-web-store/rating/njnpnfbnkpccabdjcgmgambggjnmbnad.svg)](https://chromewebstore.google.com/detail/web-element-selector-gene/njnpnfbnkpccabdjcgmgambggjnmbnad)
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/promo-dark/promo_6_overview.png">
   <source media="(prefers-color-scheme: light)" srcset="images/promo-light/promo_6_overview.png">
