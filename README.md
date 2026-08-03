@@ -3,6 +3,9 @@
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/njnpnfbnkpccabdjcgmgambggjnmbnad.svg?label=Chrome%20Web%20Store)](https://chromewebstore.google.com/detail/web-element-selector-gene/njnpnfbnkpccabdjcgmgambggjnmbnad)
 [![Users](https://img.shields.io/chrome-web-store/users/njnpnfbnkpccabdjcgmgambggjnmbnad.svg)](https://chromewebstore.google.com/detail/web-element-selector-gene/njnpnfbnkpccabdjcgmgambggjnmbnad)
 [![Rating](https://img.shields.io/chrome-web-store/rating/njnpnfbnkpccabdjcgmgambggjnmbnad.svg)](https://chromewebstore.google.com/detail/web-element-selector-gene/njnpnfbnkpccabdjcgmgambggjnmbnad)
+[![Mozilla Add-on](https://img.shields.io/amo/v/web-element-selector-generator.svg?label=Firefox%20Add-on)](https://addons.mozilla.org/en-US/firefox/addon/web-element-selector-generator/)
+[![Mozilla Add-on Users](https://img.shields.io/amo/users/web-element-selector-generator.svg)](https://addons.mozilla.org/en-US/firefox/addon/web-element-selector-generator/)
+[![Mozilla Add-on Rating](https://img.shields.io/amo/rating/web-element-selector-generator.svg)](https://addons.mozilla.org/en-US/firefox/addon/web-element-selector-generator/)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/promo-dark/promo_6_overview.png">
@@ -10,7 +13,7 @@
   <img alt="Web Element Selector Generator — popup and full-page scan side panel" src="images/promo-dark/promo_6_overview.png">
 </picture>
 
-A Chrome (Manifest V3) extension that turns any element — or an entire page — into ready-to-use CSS, XPath, ARIA, and Playwright locators, plus copy-paste code snippets for Selenium, Playwright, Cypress, and WebdriverIO — for test automation, web scraping, and debugging.
+A Chrome and Firefox (Manifest V3) extension that turns any element — or an entire page — into ready-to-use CSS, XPath, ARIA, and Playwright locators, plus copy-paste code snippets for Selenium, Playwright, Cypress, and WebdriverIO — for test automation, web scraping, and debugging.
 
 ## Features
 
@@ -57,7 +60,9 @@ The extension has six parts:
 3. Enable **Developer mode** (top right).
 4. Click **Load unpacked** and select the project folder.
 
-**From the Chrome Web Store:** search for "Web Element Selector Generator" (or use the store link once published).
+**From the Chrome Web Store:** search for "Web Element Selector Generator" or use the [store link](https://chromewebstore.google.com/detail/web-element-selector-gene/njnpnfbnkpccabdjcgmgambggjnmbnad).
+
+**From Firefox Add-ons (AMO):** install directly from the [Web Element Selector Generator](https://addons.mozilla.org/en-US/firefox/addon/web-element-selector-generator/) listing on addons.mozilla.org.
 
 ## Usage
 
@@ -121,7 +126,8 @@ No data is transmitted anywhere — history, scan results, and settings are stor
 ## Project structure
 
 ```
-manifest.json        Extension manifest (MV3)
+manifest.json         Extension manifest (MV3, Chrome build)
+manifest.firefox.json Extension manifest (MV3, Firefox build)
 background.js         Service worker: history, badge, context menu, shortcuts, page-scan orchestration
 content.js            Selector-building + full-page scan engine, injected into every frame
 snippets.js           Code-snippet generators (Selenium/Playwright/Cypress/WebdriverIO), shared by popup + side panel
